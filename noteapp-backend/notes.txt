@@ -1,0 +1,47 @@
+The express json-parser is a middleware
+
+Middleware are functions that can be used for handling request 
+and response objects.
+
+The json-parser we used earlier takes the raw data from the 
+the request that are stored in the request object, parses it 
+into Javascript object and assigns it to the request object as a
+new property body.
+
+In practice, you can use several middlewares at the same time.
+When you have more than one, they're executed one by one int the
+order they were listed in the application code.
+
+Let's implement our own middleware that prints information about
+every request that is sent to the server.
+
+Middleware is a function that receives three parameters:
+1- request, 2- response and 3- next (middleware)
+
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:', request.path)
+    console.log('Body:', request.body)
+    next()
+}
+
+At the end of the function body, the next function that 
+was passed as a parameter is called. The next function yields 
+control to the next middleware.
+
+Middleware is used like this:
+app.use(requestLogger)
+
+Remember, middleware functions are called in the order that 
+they're encountered by the JavaScript engine. Notice that 
+json-parser is listed before requestLogger , because otherwise 
+request.body will not be initialized when the logger is executed!
+Middleware functions have to be used before routes when we want 
+them to be executed by the route event handlers. Sometimes, 
+we want to use middleware functions after routes. We do this 
+when the middleware functions are only called if no route handler 
+processes the HTTP request. Let's add the following middleware 
+after our routes. This middleware will be used 
+for catching requests made to non-existent routes. 
+For these requests, the middleware will return an error message 
+in the JSON format.
